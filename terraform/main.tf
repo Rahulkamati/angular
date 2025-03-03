@@ -60,7 +60,7 @@ resource "aws_security_group" "allow_web" {
 resource "aws_instance" "angular_app" {
   ami           = var.ami_id
   instance_type = "t2.micro"
-  subnet_id     = "subnet-0002c0f9833c778a0"
+  subnet_id     = "subnet-0ed9673b297aa9c4b"
 
   vpc_security_group_ids = [aws_security_group.allow_web.id]
   key_name              = aws_key_pair.angular_app_key.key_name
