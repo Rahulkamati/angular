@@ -8,14 +8,21 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region     = var.aws_region
+  # access_key = var.aws_access_key_id
+  # secret_key = var.aws_secret_access_key
 }
 
+# Create a new EC2 key pair
+resource "aws_key_pair" "angular_app_key" {
+  key_name   = "angular-app-key"
+  public_key = var.ssh_public_key
+}
 
 resource "aws_security_group" "allow_web" {
   name        = "allow_web_traffic"
   description = "Allow web inbound traffic"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = "vpc-09480bdec71136196"
 
   ingress {
     description = "HTTP"
@@ -48,10 +55,10 @@ resource "aws_security_group" "allow_web" {
 resource "aws_instance" "angular_app" {
   ami           = var.ami_id
   instance_type = "t2.micro"
-  subnet_id     = aws_subnet.main.id
+  subnet_id     = "subnet-0002c0f9833c778a0"
 
   vpc_security_group_ids = [aws_security_group.allow_web.id]
-  key_name              = var.key_name
+  key_name              = aws_key_pair.angular_app_key.key_name
 
   tags = {
     Name = "angular-app-instance"
