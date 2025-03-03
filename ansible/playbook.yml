@@ -1,7 +1,7 @@
 ---
 - name: Setup Docker and deploy Angular app
   hosts: all
-  become: yes
+  become: true
   vars:
     container_registry: "ghcr.io"
     container_image: "{{ github_username }}/angular-app:latest"

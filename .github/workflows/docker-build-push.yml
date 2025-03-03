@@ -63,10 +63,16 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Generate SSH key pair
+        id: ssh-key
         run: |
+          mkdir -p ~/.ssh
           ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""
-          echo "SSH_PUBLIC_KEY=$(cat ~/.ssh/id_rsa.pub)" >> $GITHUB_ENV
-          echo "SSH_PRIVATE_KEY=$(cat ~/.ssh/id_rsa)" >> $GITHUB_ENV
+          SSH_PUBLIC_KEY=$(cat ~/.ssh/id_rsa.pub)
+          SSH_PUBLIC_KEY="${SSH_PUBLIC_KEY//'%'/'%25'}"
+          SSH_PUBLIC_KEY="${SSH_PUBLIC_KEY//$'\n'/'%0A'}"
+          SSH_PUBLIC_KEY="${SSH_PUBLIC_KEY//$'\r'/'%0D'}"
+          echo "::set-output name=public_key::$SSH_PUBLIC_KEY"
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -90,9 +96,7 @@ jobs:
           cd terraform
           terraform apply -auto-approve \
             -var="aws_region=${{ secrets.AWS_REGION }}" \
-            -var="aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
-            -var="aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            -var="ssh_public_key=${{ env.SSH_PUBLIC_KEY }}"
+            -var="ssh_public_key=${{ steps.ssh-key.outputs.public_key }}"
 
       - name: Get EC2 IP
         id: ec2-ip
@@ -100,11 +104,15 @@ jobs:
           EC2_IP=$(cd terraform && terraform output -raw instance_public_ip)
           echo "::set-output name=ip::$EC2_IP"
 
-      - name: Set up SSH for Ansible
+      - name: Wait for SSH to be available
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          while ! nc -z ${{ steps.ec2-ip.outputs.ip }} 22; do
+            echo "Waiting for SSH to become available..."
+            sleep 5
+          done
+
+      - name: Add instance to known hosts
+        run: |
           ssh-keyscan -H ${{ steps.ec2-ip.outputs.ip }} >> ~/.ssh/known_hosts
 
       - name: Install Ansible
