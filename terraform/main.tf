@@ -57,15 +57,21 @@ resource "aws_security_group" "allow_web" {
   }
 }
 
-resource "aws_instance" "angular_app" {
-  ami           = var.ami_id
-  instance_type = "t2.micro"
-  subnet_id     = "subnet-0ed9673b297aa9c4b"
+module "ec2_instance" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "~> 5.0"
 
-  vpc_security_group_ids = [aws_security_group.allow_web.id]
+  name = "angular-app-instance"
+
+  instance_type          = "t2.micro"
+  ami                    = var.ami_id
   key_name              = aws_key_pair.angular_app_key.key_name
+  subnet_id             = "subnet-0002c0f9833c778a0"
+  vpc_security_group_ids = [aws_security_group.allow_web.id]
 
   tags = {
-    Name = "angular-app-instance"
+    Name        = "angular-app-instance"
+    Environment = "dev"
+    Terraform   = "true"
   }
-} 
+}
