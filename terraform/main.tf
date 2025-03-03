@@ -65,8 +65,8 @@ module "ec2_instance" {
 
   instance_type          = "t2.micro"
   ami                    = var.ami_id
-  key_name              = aws_key_pair.angular_app_key.key_name
-  subnet_id             = "subnet-0002c0f9833c778a0"
+  key_name               = aws_key_pair.angular_app_key.key_name
+  subnet_id              = "subnet-0002c0f9833c778a0"
   vpc_security_group_ids = [aws_security_group.allow_web.id]
 
   tags = {
@@ -75,5 +75,3 @@ module "ec2_instance" {
     Terraform   = "true"
   }
 }
-
-#check again
