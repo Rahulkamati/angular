@@ -1,0 +1,73 @@
+---
+- name: Setup Docker and deploy Angular app
+  hosts: all
+  become: yes
+  vars:
+    container_registry: "ghcr.io"
+    container_image: "{{ github_username }}/angular-app:latest"
+  
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: yes
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: yes
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+
+    - name: Make sure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Log into GitHub Container Registry
+      docker_login:
+        registry: "{{ container_registry }}"
+        username: "{{ github_username }}"
+        password: "{{ github_token }}"
+
+    - name: Pull Angular app image
+      docker_image:
+        name: "{{ container_image }}"
+        source: pull
+        force_source: yes
+
+    - name: Run Angular container
+      docker_container:
+        name: angular-app
+        image: "{{ container_image }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "80:80" 
