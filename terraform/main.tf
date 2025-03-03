@@ -13,9 +13,14 @@ provider "aws" {
   # secret_key = var.aws_secret_access_key
 }
 
+variable "ssh_public_key" {
+  description = "SSH public key for EC2 instance access (passed from GitHub Actions)"
+  type        = string
+}
+
 # Create a new EC2 key pair
 resource "aws_key_pair" "angular_app_key" {
-  key_name   = "angular-app-key"
+  key_name   = "angular-key"
   public_key = var.ssh_public_key
 }
 
