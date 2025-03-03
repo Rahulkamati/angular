@@ -9,7 +9,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  AWS_REGION: ${{ eu-north-1 }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
   
 
 jobs:
