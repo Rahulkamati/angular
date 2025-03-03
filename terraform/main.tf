@@ -19,8 +19,8 @@ variable "ssh_public_key" {
 }
 
 # Create a new EC2 key pair
-resource "aws_key_pair_new" "angular_app_key_new" {
-  key_name   = "angular-key-new"
+resource "aws_key_pair" "angular_app_key" {
+  key_name   = "angular-key"
   public_key = var.ssh_public_key
 }
 
@@ -65,7 +65,7 @@ module "ec2_instance" {
 
   instance_type          = "t2.micro"
   ami                    = var.ami_id
-  key_name               = aws_key_pair_new.angular_app_key_new.key_name
+  key_name               = aws_key_pair.angular_app_key.key_name
   subnet_id              = "subnet-0002c0f9833c778a0"
   vpc_security_group_ids = [aws_security_group.allow_web.id]
 
