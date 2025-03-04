@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the application
-RUN npm run build -- --configuration=development
+RUN npm run build --configuration=development
 
 # Stage 2: Serve the application using Nginx 
 FROM nginx:alpine
