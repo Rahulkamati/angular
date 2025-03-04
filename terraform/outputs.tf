@@ -15,3 +15,9 @@ output "instance_state" {
   value       = coalesce(module.ec2_instance.instance_state, "")
   sensitive   = false
 }
+
+output "instance_username" {
+  description = "Username for SSH access"
+  value       = "ec2-user"  # or "ubuntu" depending on your AMI
+  sensitive   = false
+}
