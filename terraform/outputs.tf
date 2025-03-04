@@ -16,8 +16,8 @@ output "instance_state" {
   sensitive   = false
 }
 
-output "instance_username" {
-  description = "Username for SSH access"
-  value       = "ec2-user"  # or "ubuntu" depending on your AMI
-  sensitive   = false
-}
+# output "instance_username" {
+#   description = "Username for SSH access"
+#   value       = "ec2-user"
+#   sensitive   = false
+# }

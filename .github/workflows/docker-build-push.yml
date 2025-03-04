@@ -177,25 +177,18 @@ jobs:
           sudo apt update
           sudo apt install -y ansible
 
-      - name: Get Instance Username
-        id: instance-user
-        run: |
-          cd terraform
-          USERNAME=$(terraform output -raw instance_username)
-          echo "username=$USERNAME" >> $GITHUB_OUTPUT
-
       - name: Deploy with Ansible
         run: |
           cd ansible
           ansible-playbook -i "${{ steps.ec2-ip.outputs.ip }}," playbook.yml \
-            -u ${{ steps.instance-user.outputs.username }} \
+            -u root \
             --private-key ~/.ssh/id_rsa \
             -e "github_username=${{ github.repository_owner }} \
                 github_token=${{ secrets.GITHUB_TOKEN }}" \
-            -vvv  # Add verbose output for debugging
+            -vvv
 
       - name: Debug SSH Connection
         if: failure()
         run: |
           echo "Testing SSH connection..."
-          ssh -v -i ~/.ssh/id_rsa ${{ steps.instance-user.outputs.username }}@${{ steps.ec2-ip.outputs.ip }} "whoami"
+          ssh -v -i ~/.ssh/id_rsa root@${{ steps.ec2-ip.outputs.ip }} "whoami"
