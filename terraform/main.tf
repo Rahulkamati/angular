@@ -81,7 +81,7 @@ module "ec2_instance" {
   instance_type          = "t2.micro"
   ami                    = var.ami_id
   key_name               = aws_key_pair.angular_app_key.key_name
-  subnet_id              = "subnet-089dfade2607c702e"
+  subnet_id              = "subnet-089dfade2607c702e" # Default Subnet used for mapping purpose
   vpc_security_group_ids = [aws_security_group.allow_web.id]
 
   # Add user data to ensure SSH is running
