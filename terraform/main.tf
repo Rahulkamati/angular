@@ -70,7 +70,7 @@ module "ec2_instance" {
 
   name = "angular-app-instance"
 
-  instance_type          = "t4g.micro"
+  instance_type          = "t2.micro"
   ami                    = var.ami_id
   key_name               = aws_key_pair.angular_app_key.key_name
   subnet_id              = "subnet-089dfade2607c702e"
