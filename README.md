@@ -1,6 +1,6 @@
 # Angular Application Deployment Guide
 
-This repository contains an Angular application with a complete CI/CD pipeline using Docker, GitHub Container Registry, Terraform, and Ansible.
+This repository contains an Angular application with a complete CI/CD pipeline using Docker, GitHub Container Registry, Terraform, and Ansible with aws cloud platform
 
 ## Local Development
 
