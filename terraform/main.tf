@@ -7,11 +7,10 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "04032025-terraform-state-bucket-name"
-    key            = "terraform.tfstate"
-    region         = "ap-south-1"  # Replace with your desired region
-    dynamodb_table = "04032025-terraform-state-lock"
-    encrypt        = true
+    bucket = "04032025-terraform-state-bucket-name"
+    key    = "terraform.tfstate"
+    region = "ap-south-1"
+    encrypt = true
   }
 }
 
