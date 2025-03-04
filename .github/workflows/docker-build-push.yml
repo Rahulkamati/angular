@@ -117,8 +117,9 @@ jobs:
         id: ec2-ip
         run: |
           cd terraform
-          # Get IP and remove any debug output
-          IP=$(terraform output -raw instance_public_ip | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
+          # Get IP and store in a file to avoid output formatting issues
+          terraform output -raw instance_public_ip > ip.txt
+          IP=$(cat ip.txt | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
           
           # Check if IP was found
           if [ -z "$IP" ]; then
@@ -126,8 +127,11 @@ jobs:
             exit 1
           fi
           
-          echo "Found IP: $IP"
-          echo "ip=$IP" >> $GITHUB_OUTPUT
+          # Set the output using proper GitHub Actions syntax
+          {
+            echo "Found IP: $IP"
+            echo "ip=$IP"
+          } >> $GITHUB_OUTPUT
 
       - name: Wait for instance to initialize
         run: sleep 5
