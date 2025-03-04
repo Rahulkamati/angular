@@ -115,23 +115,41 @@ jobs:
 
       - name: Get EC2 IP
         id: ec2-ip
+        continue-on-error: true
         run: |
           cd terraform
-          # Get IP and store in a file to avoid output formatting issues
-          terraform output -raw instance_public_ip > ip.txt
-          IP=$(cat ip.txt | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
+          max_attempts=3
+          attempt=1
           
-          # Check if IP was found
-          if [ -z "$IP" ]; then
-            echo "Error: Could not extract IP address"
+          while [ $attempt -le $max_attempts ]; do
+            echo "Attempt $attempt of $max_attempts to get EC2 IP"
+            
+            # Try to get the IP
+            if terraform output -raw instance_public_ip > ip.txt; then
+              IP=$(cat ip.txt | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
+              
+              if [ ! -z "$IP" ]; then
+                echo "Found IP: $IP"
+                echo "ip=$IP" >> $GITHUB_OUTPUT
+                exit 0
+              fi
+            fi
+            
+            echo "Failed to get valid IP, waiting before retry..."
+            sleep 10
+            attempt=$((attempt + 1))
+          done
+          
+          echo "::warning::Failed to get EC2 IP after $max_attempts attempts"
+          exit 1
+
+      - name: Check IP Status
+        run: |
+          if [ -z "${{ steps.ec2-ip.outputs.ip }}" ]; then
+            echo "::error::No valid IP address was obtained"
             exit 1
           fi
-          
-          # Set the output using proper GitHub Actions syntax
-          {
-            echo "Found IP: $IP"
-            echo "ip=$IP"
-          } >> $GITHUB_OUTPUT
+          echo "Successfully obtained IP: ${{ steps.ec2-ip.outputs.ip }}"
 
       - name: Wait for instance to initialize
         run: sleep 5
