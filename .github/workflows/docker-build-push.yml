@@ -117,16 +117,17 @@ jobs:
         id: ec2-ip
         run: |
           cd terraform
-          # Get the raw output and clean it up
-          IP=$(terraform output -raw instance_public_ip | tr -d '\n' | tr -d '\r')
-          # Verify IP format
-          if [[ ! $IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Error: Invalid IP format: $IP"
+          # Get IP and remove any debug output
+          IP=$(terraform output -raw instance_public_ip | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
+          
+          # Check if IP was found
+          if [ -z "$IP" ]; then
+            echo "Error: Could not extract IP address"
             exit 1
           fi
-          # Set the output
+          
+          echo "Found IP: $IP"
           echo "ip=$IP" >> $GITHUB_OUTPUT
-          echo "Retrieved IP: $IP"
 
       - name: Wait for instance to initialize
         run: sleep 5
