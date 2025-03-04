@@ -16,7 +16,7 @@ COPY . .
 # Build the application
 RUN npm run build -- --configuration=development
 
-# Stage 2: Serve the application using Nginx
+# Stage 2: Serve the application using Nginx low image wich suits for further proxy 
 FROM nginx:alpine
 
 # Copy custom nginx config (we'll create this next)
