@@ -3,6 +3,7 @@ output "instance_public_ip" {
   value       = coalesce(module.ec2_instance.public_ip, "")
   sensitive   = false
 }
+#check for description once it is up and running
 
 output "instance_public_dns" {
   description = "Public DNS of the EC2 instance"
