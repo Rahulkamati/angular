@@ -13,5 +13,4 @@ import { AppComponent } from './app.component';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { } 
-#get class impoert
+export class AppModule { }
