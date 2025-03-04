@@ -121,10 +121,7 @@ jobs:
 
       - name: Wait for SSH to be available
         run: |
-          while ! nc -z ${{ steps.ec2-ip.outputs.ip }} 22; do
-            echo "Waiting for SSH to become available..."
-            sleep 5
-          done
+          timeout 300 bash -c 'until nc -z ${{ steps.ec2-ip.outputs.ip }} 22; do echo "Waiting for SSH..."; done'
 
       - name: Add instance to known hosts
         run: |

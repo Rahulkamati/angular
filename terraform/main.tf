@@ -52,6 +52,14 @@ resource "aws_security_group" "allow_web" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "ICMP"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -75,6 +83,13 @@ module "ec2_instance" {
   key_name               = aws_key_pair.angular_app_key.key_name
   subnet_id              = "subnet-089dfade2607c702e"
   vpc_security_group_ids = [aws_security_group.allow_web.id]
+
+  # Add user data to ensure SSH is running
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo systemctl start sshd
+              sudo systemctl enable sshd
+              EOF
 
   tags = {
     Name        = "angular-app-instance"

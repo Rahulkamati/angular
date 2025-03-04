@@ -4,6 +4,11 @@ output "instance_public_ip" {
 }
 
 output "instance_public_dns" {
-  description = "Public DNS name of the EC2 instance"
+  description = "Public DNS of the EC2 instance"
   value       = module.ec2_instance.public_dns
+}
+
+output "instance_state" {
+  description = "State of the EC2 instance"
+  value       = module.ec2_instance.instance_state
 }
