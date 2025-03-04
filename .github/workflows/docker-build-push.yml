@@ -116,16 +116,14 @@ jobs:
       - name: Get EC2 IP
         id: ec2-ip
         run: |
-          EC2_IP=$(cd terraform && terraform output -raw instance_public_ip)
-          echo "::set-output name=ip::$EC2_IP"
+          cd terraform
+          echo "ip=$(terraform output -raw instance_public_ip)" >> $GITHUB_OUTPUT
 
-      - name: Wait for SSH to be available
-        run: |
-          timeout 300 bash -c 'until nc -w 1 ${{ steps.ec2-ip.outputs.ip }} 22 > /dev/null 2>&1; do echo "Waiting for SSH..."; sleep 2; done'
+      - name: Wait for instance to initialize
+        run: sleep 10
 
       - name: Add instance to known hosts
-        run: |
-          ssh-keyscan -H ${{ steps.ec2-ip.outputs.ip }} >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H ${{ steps.ec2-ip.outputs.ip }} >> ~/.ssh/known_hosts || (sleep 30 && ssh-keyscan -H ${{ steps.ec2-ip.outputs.ip }} >> ~/.ssh/known_hosts)
 
       - name: Install Ansible
         run: |
