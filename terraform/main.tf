@@ -5,6 +5,14 @@ terraform {
       version = "~> 5.0"
     }
   }
+
+  backend "s3" {
+    bucket         = "04032025-terraform-state-bucket-name"
+    key            = "terraform.tfstate"
+    region         = "ap-south-1"  # Replace with your desired region
+    dynamodb_table = "04032025-terraform-state-lock"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
@@ -27,7 +35,7 @@ resource "aws_key_pair" "angular_app_key" {
 resource "aws_security_group" "allow_web" {
   name        = "allow_web_traffic"
   description = "Allow web inbound traffic"
-  vpc_id      = "vpc-09480bdec71136196"
+  vpc_id      = "vpc-0e4e7b5eb0ac04145"
 
   ingress {
     description = "HTTP"
@@ -66,7 +74,7 @@ module "ec2_instance" {
   instance_type          = "t2.micro"
   ami                    = var.ami_id
   key_name               = aws_key_pair.angular_app_key.key_name
-  subnet_id              = "subnet-0002c0f9833c778a0"
+  subnet_id              = "subnet-089dfade2607c702e"
   vpc_security_group_ids = [aws_security_group.allow_web.id]
 
   tags = {
