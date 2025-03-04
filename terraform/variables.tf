@@ -23,5 +23,5 @@ variable "aws_region" {
 variable "ami_id" {
   description = "AMI ID for the EC2 instance"
   type        = string
-  default     = "ami-004a5985e52be0895"  # ubuntu-miminal images-ami-amd-hvm-2.0.20240503.0-x86_64-gp2
+  default     = "ami-000b814f59c679e91"  # ubuntu-miminal images-ami-amd-hvm-2.0.20240503.0-x86_64-gp2
 } 
